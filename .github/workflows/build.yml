@@ -30,6 +30,7 @@ jobs:
 
       - name: Create canonical source directory
         run: |
+          set -e
           set -x
           sudo mkdir -p /Users/Shared
           cp -R $GITHUB_WORKSPACE /Users/Shared/
@@ -60,13 +61,12 @@ jobs:
           python3 build-system/Make/ImportCertificates.py --path build-system/fake-codesigning/certs
           python3 - <<'PY'
           from pathlib import Path
-          path = Path("build-system/Make/Make.py")
+          path = Path("build-system/bazel-rules/rules_apple/tools/plisttool/plisttool.py")
           source = path.read_text()
-          old = "self.disable_provisioning_profiles = False"
-          new = "self.disable_provisioning_profiles = True"
-          if old not in source:
-              raise SystemExit("Expected provisioning-profile setting was not found")
-          path.write_text(source.replace(old, new, 1))
+          start = source.index("  def _sanity_check_profile(self):")
+          end = source.index("  def _validate_entitlements_against_profile(self, entitlements):", start)
+          replacement = "  def _sanity_check_profile(self):\n    # CI uses fake profiles that are replaced when the IPA is signed.\n    return\n\n"
+          path.write_text(source[:start] + replacement + source[end:])
           PY
           python3 -u build-system/Make/Make.py \
             --bazelUserRoot="$BAZEL_USER_ROOT" \
