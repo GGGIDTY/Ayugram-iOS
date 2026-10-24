@@ -20,6 +20,7 @@ jobs:
         run: |
           XCODE_VERSION=$(cat versions.json | python3 -c 'import json,sys;obj=json.load(sys.stdin);print(obj["xcode"]);')
           sudo xcode-select -s /Applications/Xcode_$XCODE_VERSION.app/Contents/Developer
+          xcrun simctl list > /dev/null
 
       - name: Install iOS 18.2 platform
         run: xcodebuild -downloadPlatform iOS -buildVersion 18.2
