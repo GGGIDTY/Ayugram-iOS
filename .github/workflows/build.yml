@@ -25,6 +25,9 @@ jobs:
       - name: Install iOS 18.2 platform
         run: xcodebuild -downloadPlatform iOS -buildVersion 18.2
 
+      - name: Install watchOS 11.2 platform
+        run: xcodebuild -downloadPlatform watchOS -buildVersion 11.2
+
       - name: Create canonical source directory
         run: |
           set -x
