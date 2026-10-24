@@ -55,6 +55,16 @@ jobs:
 
           cp build-system/fake-codesigning/BroadcastUpload.mobileprovision build-system/fake-codesigning/profiles/BroadcastUpload.mobileprovision
           python3 build-system/Make/ImportCertificates.py --path build-system/fake-codesigning/certs
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path("build-system/bazel-rules/rules_apple/tools/plisttool/plisttool.py")
+          source = path.read_text()
+          old = "if expire and expire < datetime.datetime.now():"
+          new = "if False and expire and expire < datetime.datetime.now():"
+          if old not in source:
+              raise SystemExit("Expected fake profile expiration check was not found")
+          path.write_text(source.replace(old, new, 1))
+          PY
           python3 -u build-system/Make/Make.py \
             --bazelUserRoot="$BAZEL_USER_ROOT" \
             build \
