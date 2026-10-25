@@ -95,6 +95,16 @@ jobs:
                   "-in", str(plain), "-outform", "DER", "-out", str(signed),
               ], check=True)
               profile.write_bytes(signed.read_bytes())
+          tool = Path("build-system/bazel-rules/rules_apple/tools/codesigningtool/codesigningtool.py")
+          source = tool.read_text()
+          start = source.index("def _find_codesign_identity(mobileprovision):")
+          end = source.index("\\ndef _filter_codesign_output(", start)
+          source = source[:start] + (
+              "def _find_codesign_identity(mobileprovision):\\n"
+              "  # CI produces an ad-hoc IPA that the user signs locally.\\n"
+              "  return \\\"-\\\"\\n\\n"
+          ) + source[end:]
+          tool.write_text(source)
           PY
           python3 -u build-system/Make/Make.py \
             --bazelUserRoot="$BAZEL_USER_ROOT" \
