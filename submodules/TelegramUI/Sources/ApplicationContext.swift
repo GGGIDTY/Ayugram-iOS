@@ -176,7 +176,7 @@ final class AuthorizedApplicationContext {
         
         self.notificationController = NotificationContainerController(context: context)
         
-        self.rootController = TelegramRootController(context: context)
+        self.rootController = TelegramRootController(showTabNames: false, context: context)
         self.rootController.minimizedContainer = self.sharedApplicationContext.minimizedContainer[context.account.id]
         self.rootController.minimizedContainerUpdated = { [weak self] minimizedContainer in
             guard let self else {
