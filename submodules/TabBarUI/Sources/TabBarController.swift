@@ -446,10 +446,10 @@ open class TabBarControllerImpl: ViewController, TabBarController {
             let bottomInset: CGFloat = updatedLayout.insets(options: options).bottom
             if !updatedLayout.safeInsets.left.isZero {
                 tabBarHeight = 34.0 + bottomInset
-                tabBarHeight = sgTabBarHeightModifier(showTabNames: self.showTabNames, tabBarHeight: tabBarHeight, layout: layout, defaultBarSmaller: true)  // MARK: Swiftgram
+                tabBarHeight = sgTabBarHeightModifier(tabBarHeight: tabBarHeight, layout: layout, defaultBarSmaller: true)  // MARK: Swiftgram
             } else {
                 tabBarHeight = 49.0 + bottomInset
-                tabBarHeight = sgTabBarHeightModifier(showTabNames: self.showTabNames, tabBarHeight: tabBarHeight, layout: layout, defaultBarSmaller: false)  // MARK: Swiftgram
+                tabBarHeight = sgTabBarHeightModifier(tabBarHeight: tabBarHeight, layout: layout, defaultBarSmaller: false)  // MARK: Swiftgram
             }
             if !self.tabBarControllerNode.tabBarHidden {
                 updatedLayout.intrinsicInsets.bottom = tabBarHeight
@@ -477,10 +477,10 @@ open class TabBarControllerImpl: ViewController, TabBarController {
             let bottomInset: CGFloat = updatedLayout.insets(options: options).bottom
             if !updatedLayout.safeInsets.left.isZero {
                 tabBarHeight = 34.0 + bottomInset
-                tabBarHeight = sgTabBarHeightModifier(showTabNames: self.showTabNames, tabBarHeight: tabBarHeight, layout: layout, defaultBarSmaller: true)  // MARK: Swiftgram
+                tabBarHeight = sgTabBarHeightModifier(tabBarHeight: tabBarHeight, layout: layout, defaultBarSmaller: true)  // MARK: Swiftgram
             } else {
                 tabBarHeight = 49.0 + bottomInset
-                tabBarHeight = sgTabBarHeightModifier(showTabNames: self.showTabNames, tabBarHeight: tabBarHeight, layout: layout, defaultBarSmaller: false)  // MARK: Swiftgram
+                tabBarHeight = sgTabBarHeightModifier(tabBarHeight: tabBarHeight, layout: layout, defaultBarSmaller: false)  // MARK: Swiftgram
             }
             if !self.tabBarControllerNode.tabBarHidden {
                 updatedLayout.intrinsicInsets.bottom = tabBarHeight
