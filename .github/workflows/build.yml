@@ -68,6 +68,34 @@ jobs:
           replacement = "  def _sanity_check_profile(self):\n    # CI uses fake profiles that are replaced when the IPA is signed.\n    return\n\n"
           path.write_text(source[:start] + replacement + source[end:])
           PY
+          CERT_DIR="$SOURCE_DIR/build-system/fake-codesigning/certs"
+          PROFILE_DIR="$SOURCE_DIR/build-system/fake-codesigning/profiles"
+          openssl pkcs12 -in "$CERT_DIR/SelfSigned.p12" -clcerts -nokeys -passin pass: -out "$RUNNER_TEMP/fake-codesign-cert.pem"
+          openssl pkcs12 -in "$CERT_DIR/SelfSigned.p12" -nocerts -nodes -passin pass: -out "$RUNNER_TEMP/fake-codesign-key.pem"
+          openssl x509 -in "$RUNNER_TEMP/fake-codesign-cert.pem" -outform DER -out "$RUNNER_TEMP/fake-codesign-cert.der"
+          python3 - <<'PY'
+          import plistlib
+          import subprocess
+          from pathlib import Path
+          profile_dir = Path("build-system/fake-codesigning/profiles")
+          temp = Path(__import__("os").environ["RUNNER_TEMP"])
+          cert = temp / "fake-codesign-cert.pem"
+          key = temp / "fake-codesign-key.pem"
+          der = (temp / "fake-codesign-cert.der").read_bytes()
+          for profile in profile_dir.glob("*.mobileprovision"):
+              plain = temp / (profile.stem + ".plist")
+              signed = temp / (profile.name + ".cms")
+              decoded = subprocess.check_output(["security", "cms", "-D", "-i", str(profile)])
+              data = plistlib.loads(decoded)
+              data["DeveloperCertificates"] = [der]
+              plain.write_bytes(plistlib.dumps(data, fmt=plistlib.FMT_XML))
+              subprocess.run([
+                  "openssl", "cms", "-sign", "-binary", "-nodetach",
+                  "-signer", str(cert), "-inkey", str(key),
+                  "-in", str(plain), "-outform", "DER", "-out", str(signed),
+              ], check=True)
+              profile.write_bytes(signed.read_bytes())
+          PY
           python3 -u build-system/Make/Make.py \
             --bazelUserRoot="$BAZEL_USER_ROOT" \
             build \
