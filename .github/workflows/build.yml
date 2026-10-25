@@ -126,8 +126,18 @@ jobs:
             cp -R "$f" build/DSYMs/
           done
           zip -r "./$OUTPUT_PATH/Telegram.DSYMs.zip" build/DSYMs 1>/dev/null
+          mkdir -p "$GITHUB_WORKSPACE/build/artifacts"
+          cp "$OUTPUT_PATH/Telegram.ipa" "$GITHUB_WORKSPACE/build/artifacts/Telegram.ipa"
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Telegram-IPA
+          path: build/artifacts/Telegram.ipa
+          if-no-files-found: error
 
       - name: Create Release
+        if: false
         id: create_release
         uses: actions/create-release@v1
         env:
@@ -141,6 +151,7 @@ jobs:
           prerelease: false
 
       - name: Upload Release IPA
+        if: false
         id: upload-release-ipa
         uses: actions/upload-release-asset@v1
         env:
@@ -152,6 +163,7 @@ jobs:
           asset_content_type: application/zip
 
       - name: Upload Release DSYM
+        if: false
         id: upload-release-dsym
         uses: actions/upload-release-asset@v1
         env:
